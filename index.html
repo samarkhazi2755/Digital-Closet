@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Closet — Digital Wardrobe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #F2EEE8;
+  --bg2:       #E8E2D9;
+  --surface:   #FAFAF7;
+  --surface2:  #F5F1EB;
+  --border:    #DDD8CF;
+  --border2:   #C4BCB0;
+  --text:      #1A1714;
+  --text2:     #6B635A;
+  --muted:     #A89E94;
+  --accent:    #1A1714;
+  --accent2:   #3D3530;
+  --gold:      #B8985A;
+  --gold2:     #D4B87A;
+  --red:       #B04040;
+  --green:     #3D7A58;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow:    0 8px 32px rgba(0,0,0,0.08);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+  --radius:    4px;
+  --radius-sm: 2px;
+  --sidebar-w: 260px;
+}
+
+html { font-size: 15px; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Subtle linen texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.008) 3px, rgba(0,0,0,0.008) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.008) 3px, rgba(0,0,0,0.008) 4px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Layout ─────────────────────────────────────────── */
+.layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ─── Sidebar ─────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--accent);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+/* Subtle vertical stripe texture on sidebar */
+.sidebar::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    transparent 60px,
+    rgba(255,255,255,0.015) 60px,
+    rgba(255,255,255,0.015) 61px
+  );
+  pointer-events: none;
+}
+
+.sidebar-logo {
+  padding: 36px 28px 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+
+.sidebar-logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.sidebar-logo h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.55rem;
+  font-weight: 400;
+  color: #FAF8F5;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.sidebar-logo span {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-top: 4px;
+}
+
+.sidebar-nav {
+  padding: 20px 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-nav::-webkit-scrollbar { width: 0; }
+
+.nav-label {
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  padding: 16px 12px 8px;
+}
+
+.nav-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 12px 12px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  color: rgba(255,255,255,0.45);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s, background 0.2s;
+  letter-spacing: 0.01em;
+  position: relative;
+}
+
+.nav-btn .icon {
+  font-size: 0.9rem;
+  width: 18px;
+  text-align: center;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.nav-btn .count {
+  margin-left: auto;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.2);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+.nav-btn:hover {
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.8);
+}
+
+.nav-btn.active {
+  color: #FAF8F5;
+  background: rgba(255,255,255,0.08);
+}
+
+.nav-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 2px;
+  background: var(--gold);
+}
+
+.nav-btn.active .count { color: rgba(255,255,255,0.4); }
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.stats-row { display: flex; gap: 1px; }
+
+.stat-box {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  padding: 12px 8px;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+.stat-box:first-child { border-radius: 3px 0 0 3px; }
+.stat-box:last-child { border-radius: 0 3px 3px 0; }
+.stat-box:hover { background: rgba(255,255,255,0.07); }
+
+.stat-box .num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #FAF8F5;
+  display: block;
+  line-height: 1;
+}
+
+.stat-box .lbl {
+  font-size: 0.58rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.22);
+  display: block;
+  margin-top: 4px;
+}
+
+/* ─── Main ──────────────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ─── Topbar ─────────────────────────────────────────── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 36px;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow-xs);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+
+.page-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+/* Breadcrumb-style category indicator */
+.topbar-cat {
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar-cat::before {
+  content: '/';
+  color: var(--border2);
+}
+
+.search-wrap { position: relative; }
+
+.search-wrap input {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 7px 14px 7px 34px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text);
+  outline: none;
+  width: 190px;
+  transition: border-color 0.2s, width 0.3s, background 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.search-wrap input:focus {
+  border-color: var(--gold);
+  width: 230px;
+  background: var(--surface);
+}
+
+.search-wrap input::placeholder { color: var(--muted); }
+
+.search-icon {
+  position: absolute;
+  left: 11px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #FAF8F5;
+  border-radius: 2px;
+}
+
+.btn-primary:hover { background: var(--accent2); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.btn-outline:hover { border-color: var(--border2); background: var(--bg2); color: var(--text); }
+
+.btn-highlight {
+  background: var(--gold);
+  color: #fff;
+  font-weight: 500;
+  border-radius: 2px;
+  letter-spacing: 0.06em;
+}
+.btn-highlight:hover { background: var(--gold2); }
+
+/* ─── Content ────────────────────────────────────────── */
+.content { padding: 32px 36px; flex: 1; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── Filter bar ─────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.filter-bar::-webkit-scrollbar { height: 0; }
+
+.filter-pill {
+  padding: 8px 18px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 400;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  margin-bottom: -1px;
+}
+
+.filter-pill:hover { color: var(--text2); }
+.filter-pill.active {
+  color: var(--text);
+  border-bottom-color: var(--gold);
+  font-weight: 500;
+}
+
+/* ─── Clothing grid ──────────────────────────────────── */
+.clothing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 20px;
+}
+
+.clothing-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.3s, border-color 0.2s;
+  animation: fadeUp 0.35s ease both;
+  position: relative;
+}
+
+.clothing-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-3px);
+  border-color: var(--border2);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-img-wrap {
+  position: relative;
+  aspect-ratio: 3/4;
+  background: var(--bg2);
+  overflow: hidden;
+}
+
+.card-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.clothing-card:hover .card-img-wrap img { transform: scale(1.05); }
+
+.card-actions {
+  position: absolute;
+  top: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.clothing-card:hover .card-actions { opacity: 1; }
+
+.card-action-btn {
+  width: 32px; height: 32px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: rgba(26,23,20,0.85);
+  color: rgba(255,255,255,0.7);
+  backdrop-filter: blur(4px);
+}
+
+.card-action-btn:hover { background: var(--accent); color: #fff; }
+.btn-fav-card.faved { color: #E08080; }
+.btn-delete-card:hover { background: var(--red) !important; color: #fff !important; }
+
+.card-category-badge {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(0deg, rgba(26,23,20,0.75) 0%, transparent 100%);
+  color: rgba(255,255,255,0.85);
+  font-size: 0.58rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 24px 10px 8px;
+}
+
+.card-body {
+  padding: 11px 13px 13px;
+  border-top: 1px solid var(--border);
+}
+
+.card-name {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
+
+.card-meta {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.tag {
+  font-size: 0.6rem;
+  font-weight: 400;
+  padding: 2px 7px;
+  background: var(--bg2);
+  color: var(--text2);
+  text-transform: capitalize;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--border);
+}
+
+/* ─── Empty state ────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+  color: var(--muted);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 18px;
+  display: block;
+  opacity: 0.3;
+}
+
+.empty-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text2);
+  margin-bottom: 10px;
+}
+
+.empty-text {
+  font-size: 0.82rem;
+  line-height: 1.8;
+  max-width: 280px;
+  margin: 0 auto 22px;
+  color: var(--muted);
+}
+
+/* ─── Upload Modal ───────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,23,20,0.6);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  width: 100%;
+  max-width: 530px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal::-webkit-scrollbar { width: 3px; }
+.modal::-webkit-scrollbar-thumb { background: var(--border2); }
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  padding: 28px 28px 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+
+.modal-header-text {}
+
+.modal-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text);
+}
+
+.modal-header p {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+
+.modal-close {
+  width: 28px; height: 28px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.modal-close:hover { background: var(--bg2); color: var(--text); border-color: var(--border2); }
+
+.modal-body { padding: 24px 28px; }
+
+.drop-zone {
+  border: 1px dashed var(--border2);
+  background: var(--bg);
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+
+.drop-zone:hover, .drop-zone.drag-over {
+  border-color: var(--gold);
+  background: #F8F5EF;
+}
+
+.drop-zone input[type="file"] {
+  position: absolute; inset: 0;
+  opacity: 0; cursor: pointer;
+  width: 100%; height: 100%;
+}
+
+.drop-icon {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  display: block;
+  opacity: 0.5;
+}
+
+.drop-text {
+  font-size: 0.82rem;
+  color: var(--text2);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.drop-sub {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.upload-previews {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.preview-thumb {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.preview-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.preview-thumb .remove-preview {
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 18px; height: 18px;
+  background: rgba(26,23,20,0.8);
+  color: #fff;
+  border: none;
+  font-size: 0.55rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-section-label {
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 20px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-group {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 9px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  appearance: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--gold);
+  background: #FDFCF9;
+}
+
+.form-group input::placeholder { color: var(--muted); }
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Color swatches */
+.color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.color-swatch {
+  width: 26px; height: 26px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+
+.color-swatch:hover { transform: scale(1.15); }
+.color-swatch.selected {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--gold);
+}
+
+/* Tag input */
+.tag-input-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  cursor: text;
+  min-height: 42px;
+  align-items: center;
+  transition: border-color 0.2s;
+}
+
+.tag-input-wrap:focus-within { border-color: var(--gold); }
+
+.tag-pill {
+  background: var(--accent);
+  color: rgba(255,255,255,0.85);
+  font-size: 0.66rem;
+  font-weight: 400;
+  padding: 3px 9px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.04em;
+}
+
+.tag-pill button {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  font-size: 0.6rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.tag-input-wrap input {
+  border: none !important;
+  background: transparent !important;
+  padding: 2px 4px !important;
+  flex: 1;
+  min-width: 80px;
+  font-size: 0.8rem !important;
+  outline: none;
+  border-radius: 0 !important;
+}
+
+.modal-footer {
+  padding: 16px 28px 24px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── Outfit Generator ───────────────────────────────── */
+.outfit-section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text2);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: 0.02em;
+}
+
+.outfit-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.outfit-display {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 36px;
+  margin-bottom: 24px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+/* Corner ornaments */
+.outfit-display::before,
+.outfit-display::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  border-color: var(--gold);
+  border-style: solid;
+  opacity: 0.4;
+}
+
+.outfit-display::before {
+  top: 12px; left: 12px;
+  border-width: 1px 0 0 1px;
+}
+
+.outfit-display::after {
+  bottom: 12px; right: 12px;
+  border-width: 0 1px 1px 0;
+}
+
+.outfit-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+}
+
+.outfit-slots {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.outfit-slot {
+  flex: 1;
+  min-width: 130px;
+  max-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: popIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.88) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.outfit-slot-img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  box-shadow: var(--shadow-sm);
+}
+
+.outfit-slot-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.outfit-slot-label {
+  font-size: 0.58rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+}
+
+.outfit-slot-name {
+  font-size: 0.76rem;
+  color: var(--text2);
+  text-align: center;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Saved outfits */
+.saved-outfits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 18px;
+}
+
+.saved-outfit-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 18px;
+  transition: box-shadow 0.3s, transform 0.3s;
+  animation: fadeUp 0.3s ease both;
+}
+
+.saved-outfit-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.saved-outfit-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.saved-outfit-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text);
+}
+
+.saved-outfit-date {
+  font-size: 0.64rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.saved-outfit-imgs {
+  display: flex;
+  gap: 5px;
+}
+
+.saved-outfit-imgs img {
+  flex: 1;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.saved-outfit-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.saved-outfit-pieces {
+  font-size: 0.66rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.btn-sm {
+  padding: 5px 14px;
+  font-size: 0.68rem;
+}
+
+.btn-delete-outfit {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 400;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.btn-delete-outfit:hover { background: #FEF0F0; border-color: var(--red); color: var(--red); }
+
+/* Outfit name row */
+.outfit-name-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 14px;
+  width: 100%;
+  max-width: 380px;
+}
+
+.outfit-name-row input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  border-radius: 0;
+}
+
+.outfit-name-row input:focus { border-color: var(--gold); }
+.outfit-name-row input::placeholder { color: var(--muted); }
+
+/* ─── Toast ──────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: var(--accent);
+  color: rgba(255,255,255,0.9);
+  padding: 12px 20px;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  box-shadow: var(--shadow-lg);
+  z-index: 9000;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  max-width: 300px;
+  border-left: 3px solid var(--gold);
+}
+
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ─── Mobile ─────────────────────────────────────────── */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text2);
+}
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+
+@media (max-width: 800px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop.open { display: block; }
+  .main { margin-left: 0; }
+  .menu-toggle { display: flex; }
+  .content { padding: 20px 18px; }
+  .topbar { padding: 0 18px; }
+  .search-wrap input { width: 130px; }
+  .clothing-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 12px; }
+  .outfit-slots { gap: 12px; }
+  .outfit-slot { min-width: 100px; }
+  .form-row-2 { grid-template-columns: 1fr; }
+  .outfit-display { padding: 20px; }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); }
+
+/* Placeholder */
+.placeholder-img {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  color: var(--muted);
+  background: var(--bg2);
+  opacity: 0.6;
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <div class="logo-icon">✦</div>
+        <h1>My Closet</h1>
+      </div>
+      <span>Digital Wardrobe</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Browse</div>
+      <button class="nav-btn active" data-view="closet" data-cat="all">
+        <span class="icon">◻</span> All Items
+        <span class="count" id="cnt-all">0</span>
+      </button>
+      <button class="nav-btn" data-view="closet" data-cat="tops">
+        <span class="icon">◻</span> Tops
+        <span class="count" id="cnt-tops">0</span>
+      </button>
+      <button class="nav-btn" data-view="closet" data-cat="bottoms">
+        <span class="icon">◻</span> Bottoms
+        <span class="count" id="cnt-bottoms">0</span>
+      </button>
+      <button class="nav-btn" data-view="closet" data-cat="dresses">
+        <span class="icon">◻</span> Dresses
+        <span class="count" id="cnt-dresses">0</span>
+      </button>
+      <button class="nav-btn" data-view="closet" data-cat="outerwear">
+        <span class="icon">◻</span> Outerwear
+        <span class="count" id="cnt-outerwear">0</span>
+      </button>
+      <button class="nav-btn" data-view="closet" data-cat="shoes">
+        <span class="icon">◻</span> Shoes
+        <span class="count" id="cnt-shoes">0</span>
+      </button>
+      <button class="nav-btn" data-view="closet" data-cat="accessories">
+        <span class="icon">◻</span> Accessories
+        <span class="count" id="cnt-accessories">0</span>
+      </button>
+
+      <div class="nav-divider"></div>
+      <div class="nav-label">Outfits</div>
+      <button class="nav-btn" data-view="outfit">
+        <span class="icon">✦</span> Generate Outfit
+      </button>
+      <button class="nav-btn" data-view="saved">
+        <span class="icon">◻</span> Saved Outfits
+        <span class="count" id="cnt-saved">0</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="num" id="stat-items">0</span>
+          <span class="lbl">Items</span>
+        </div>
+        <div class="stat-box">
+          <span class="num" id="stat-outfits">0</span>
+          <span class="lbl">Outfits</span>
+        </div>
+        <div class="stat-box">
+          <span class="num" id="stat-cats">0</span>
+          <span class="lbl">Cats.</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div class="page-title" id="pageTitle">My Closet</div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search items…"/>
+        </div>
+        <button class="btn btn-primary" id="uploadBtn">＋ Add Item</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── Closet View ── -->
+      <div class="view active" id="view-closet">
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-pill active" data-cat="all">All</button>
+          <button class="filter-pill" data-cat="tops">Tops</button>
+          <button class="filter-pill" data-cat="bottoms">Bottoms</button>
+          <button class="filter-pill" data-cat="dresses">Dresses</button>
+          <button class="filter-pill" data-cat="outerwear">Outerwear</button>
+          <button class="filter-pill" data-cat="shoes">Shoes</button>
+          <button class="filter-pill" data-cat="accessories">Accessories</button>
+        </div>
+        <div class="clothing-grid" id="clothingGrid"></div>
+      </div>
+
+      <!-- ── Outfit Generator View ── -->
+      <div class="view" id="view-outfit">
+        <div class="outfit-section-title">Generated Outfit</div>
+        <div class="outfit-display" id="outfitDisplay">
+          <div class="outfit-empty">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;opacity:0.2;line-height:1">✦</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;font-style:italic;color:var(--text2);margin-top:14px">No outfit generated yet</div>
+            <div style="font-size:0.78rem;color:var(--muted);margin-top:6px;letter-spacing:0.04em">Generate a look from your wardrobe below</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-highlight" id="generateBtn">✦ Generate Random Outfit</button>
+            <button class="btn btn-outline" id="saveOutfitBtn" style="display:none">Save Outfit</button>
+          </div>
+          <div class="outfit-name-row" id="outfitNameRow" style="display:none">
+            <input type="text" id="outfitNameInput" placeholder="Name this outfit…" maxlength="40"/>
+            <button class="btn btn-primary btn-sm" id="confirmSaveBtn">Save</button>
+            <button class="btn btn-outline btn-sm" id="cancelSaveBtn">Cancel</button>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:0.72rem;color:var(--muted);text-align:center;letter-spacing:0.04em" id="outfitHint"></div>
+      </div>
+
+      <!-- ── Saved Outfits View ── -->
+      <div class="view" id="view-saved">
+        <div class="outfit-section-title">Saved Outfits</div>
+        <div class="saved-outfits-grid" id="savedOutfitsGrid"></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ── Upload Modal ── -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <h2>Add to Wardrobe</h2>
+        <p>Upload photos and describe your piece</p>
+      </div>
+      <button class="modal-close" id="closeModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="drop-zone" id="dropZone">
+        <input type="file" id="fileInput" accept="image/*" multiple/>
+        <span class="drop-icon">📷</span>
+        <div class="drop-text">Drop photos here or click to browse</div>
+        <div class="drop-sub">JPG · PNG · WEBP &nbsp;·&nbsp; Multiple allowed</div>
+      </div>
+      <div class="upload-previews" id="uploadPreviews"></div>
+
+      <div class="form-section-label">Item Details</div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Item Name</label>
+          <input type="text" id="itemName" placeholder="e.g. White Linen Shirt" maxlength="50"/>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="itemCategory">
+            <option value="">Select…</option>
+            <option value="tops">Tops</option>
+            <option value="bottoms">Bottoms</option>
+            <option value="dresses">Dresses</option>
+            <option value="outerwear">Outerwear</option>
+            <option value="shoes">Shoes</option>
+            <option value="accessories">Accessories</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Brand</label>
+          <input type="text" id="itemBrand" placeholder="e.g. Zara, H&M…" maxlength="30"/>
+        </div>
+        <div class="form-group">
+          <label>Season</label>
+          <select id="itemSeason">
+            <option value="">All seasons</option>
+            <option value="spring">Spring</option>
+            <option value="summer">Summer</option>
+            <option value="autumn">Autumn</option>
+            <option value="winter">Winter</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section-label">Colour & Tags</div>
+
+      <div class="form-group">
+        <label>Colour</label>
+        <div class="color-swatches" id="colorSwatches">
+          <div class="color-swatch" data-color="white"   style="background:#F5F5F5;border:1px solid #ddd" title="White"></div>
+          <div class="color-swatch" data-color="black"   style="background:#1C1C1C" title="Black"></div>
+          <div class="color-swatch" data-color="grey"    style="background:#9E9E9E" title="Grey"></div>
+          <div class="color-swatch" data-color="beige"   style="background:#D4B896" title="Beige"></div>
+          <div class="color-swatch" data-color="brown"   style="background:#795548" title="Brown"></div>
+          <div class="color-swatch" data-color="red"     style="background:#E53935" title="Red"></div>
+          <div class="color-swatch" data-color="pink"    style="background:#F06292" title="Pink"></div>
+          <div class="color-swatch" data-color="orange"  style="background:#FB8C00" title="Orange"></div>
+          <div class="color-swatch" data-color="yellow"  style="background:#FDD835" title="Yellow"></div>
+          <div class="color-swatch" data-color="green"   style="background:#43A047" title="Green"></div>
+          <div class="color-swatch" data-color="teal"    style="background:#00897B" title="Teal"></div>
+          <div class="color-swatch" data-color="blue"    style="background:#1E88E5" title="Blue"></div>
+          <div class="color-swatch" data-color="navy"    style="background:#1A237E" title="Navy"></div>
+          <div class="color-swatch" data-color="purple"  style="background:#8E24AA" title="Purple"></div>
+          <div class="color-swatch" data-color="pattern" style="background:conic-gradient(red,yellow,green,blue,red)" title="Pattern/Print"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tags</label>
+        <div class="tag-input-wrap" id="tagInputWrap">
+          <input type="text" id="tagInput" placeholder="casual, formal… (Enter to add)"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="cancelModal">Cancel</button>
+      <button class="btn btn-primary" id="saveItemBtn">Save to Wardrobe</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── State ──────────────────────────────────────────────────── */
+const STORAGE_KEY = 'mycloset_v2';
+const OUTFITS_KEY = 'mycloset_outfits_v2';
+
+let items   = [];
+let outfits = [];
+let currentView = 'closet';
+let currentCat  = 'all';
+let currentOutfit = null;
+let uploadFiles   = [];
+let uploadTags    = [];
+let selectedColor = '';
+
+/* ─── Persistence ────────────────────────────────────────────── */
+function loadData() {
+  try { items   = JSON.parse(localStorage.getItem(STORAGE_KEY))  || []; } catch(e) { items   = []; }
+  try { outfits = JSON.parse(localStorage.getItem(OUTFITS_KEY)) || []; } catch(e) { outfits = []; }
+}
+
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY,  JSON.stringify(items));   } catch(e) {}
+  try { localStorage.setItem(OUTFITS_KEY, JSON.stringify(outfits)); } catch(e) {}
+}
+
+/* ─── Utils ──────────────────────────────────────────────────── */
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function toast(msg, dur=2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), dur);
+}
+
+function catEmoji(cat) {
+  return {tops:'👕',bottoms:'👖',dresses:'👗',outerwear:'🧥',shoes:'👟',accessories:'👜'}[cat] || '👔';
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function relDate(ts) {
+  const d = Math.floor((Date.now()-ts)/86400000);
+  if(d===0) return 'Today';
+  if(d===1) return 'Yesterday';
+  if(d<7)   return d+'d ago';
+  if(d<30)  return Math.floor(d/7)+'w ago';
+  return Math.floor(d/30)+'mo ago';
+}
+
+/* ─── Navigation ─────────────────────────────────────────────── */
+function showView(view, cat='all') {
+  currentView = view;
+  currentCat  = cat;
+
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    const bv = b.dataset.view;
+    const bc = b.dataset.cat;
+    b.classList.toggle('active',
+      bv === view && (view!=='closet' || bc===cat || (view==='closet'&&bc===cat))
+    );
+  });
+
+  const titles = { closet: cat==='all'?'My Closet': cap(cat), outfit: 'Generate Outfit', saved: 'Saved Outfits' };
+  document.getElementById('pageTitle').textContent = titles[view] || 'My Closet';
+
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.dataset.cat===cat));
+
+  if(view==='closet')  renderGrid();
+  if(view==='saved')   renderSaved();
+  if(view==='outfit')  checkOutfitState();
+
+  closeSidebar();
+}
+
+function cap(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
+
+/* ─── Counts & stats ─────────────────────────────────────────── */
+function updateCounts() {
+  const cats = ['all','tops','bottoms','dresses','outerwear','shoes','accessories'];
+  cats.forEach(c => {
+    const el = document.getElementById('cnt-'+c);
+    if(el) el.textContent = c==='all' ? items.length : items.filter(i=>i.category===c).length;
+  });
+  document.getElementById('cnt-saved').textContent = outfits.length;
+  document.getElementById('stat-items').textContent   = items.length;
+  document.getElementById('stat-outfits').textContent = outfits.length;
+  const usedCats = new Set(items.map(i=>i.category).filter(Boolean));
+  document.getElementById('stat-cats').textContent = usedCats.size;
+}
+
+/* ─── Render grid ────────────────────────────────────────────── */
+function renderGrid() {
+  const grid    = document.getElementById('clothingGrid');
+  const search  = document.getElementById('searchInput').value.toLowerCase();
+  let filtered  = items.filter(i => {
+    const matchCat  = currentCat==='all' || i.category===currentCat;
+    const matchSearch = !search || i.name.toLowerCase().includes(search) ||
+      (i.brand||'').toLowerCase().includes(search) ||
+      (i.tags||[]).some(t=>t.toLowerCase().includes(search));
+    return matchCat && matchSearch;
+  });
+
+  if(filtered.length===0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <span class="empty-icon">✦</span>
+        <div class="empty-title">${currentCat==='all'&&!search?'Your wardrobe is empty':'Nothing found'}</div>
+        <div class="empty-text">${currentCat==='all'&&!search?'Click <strong>+ Add Item</strong> to start building your digital wardrobe.':'Try a different search or category.'}</div>
+        ${currentCat==='all'&&!search?'<button class="btn btn-primary" onclick="openModal()">＋ Add First Item</button>':''}
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((item, idx) => `
+    <div class="clothing-card" style="animation-delay:${idx*0.04}s">
+      <div class="card-img-wrap">
+        ${item.imageData
+          ? `<img src="${item.imageData}" alt="${esc(item.name)}" loading="lazy"/>`
+          : `<div class="placeholder-img">${catEmoji(item.category)}</div>`}
+        <div class="card-actions">
+          <button class="card-action-btn btn-fav-card ${item.fav?'faved':''}"
+            onclick="toggleFav('${item.id}',event)" title="${item.fav?'Unfavourite':'Favourite'}">
+            ${item.fav?'♥':'♡'}
+          </button>
+          <button class="card-action-btn btn-delete-card"
+            onclick="deleteItem('${item.id}',event)" title="Delete">✕</button>
+        </div>
+        <div class="card-category-badge">${cap(item.category||'uncategorised')}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${esc(item.name||'Unnamed')}</div>
+        <div class="card-meta">${esc(item.brand||'')} ${item.season?'· '+cap(item.season):''} ${item.color?'· '+cap(item.color):''}</div>
+        ${item.tags&&item.tags.length?`<div class="card-tags">${item.tags.slice(0,3).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`:''}
+      </div>
+    </div>`
+  ).join('');
+}
+
+/* ─── Item actions ───────────────────────────────────────────── */
+function toggleFav(id, e) {
+  e.stopPropagation();
+  const item = items.find(i=>i.id===id);
+  if(item) { item.fav = !item.fav; saveData(); renderGrid(); }
+}
+
+function deleteItem(id, e) {
+  e.stopPropagation();
+  if(!confirm('Remove this item from your closet?')) return;
+  items = items.filter(i=>i.id!==id);
+  saveData(); updateCounts(); renderGrid();
+  toast('Item removed from wardrobe');
+}
+
+/* ─── Upload modal ───────────────────────────────────────────── */
+function openModal() {
+  uploadFiles = []; uploadTags = []; selectedColor = '';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('itemName').value = '';
+  document.getElementById('itemCategory').value = '';
+  document.getElementById('itemBrand').value = '';
+  document.getElementById('itemSeason').value = '';
+  document.getElementById('tagInput').value = '';
+  document.getElementById('uploadPreviews').innerHTML = '';
+  document.getElementById('tagInputWrap').querySelectorAll('.tag-pill').forEach(e=>e.remove());
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+  document.getElementById('uploadModal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('uploadModal').classList.remove('open'); }
+
+document.getElementById('uploadBtn').addEventListener('click', openModal);
+document.getElementById('closeModal').addEventListener('click', closeModal);
+document.getElementById('cancelModal').addEventListener('click', closeModal);
+document.getElementById('uploadModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
+
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files);
+});
+
+function handleFiles(fileList) {
+  Array.from(fileList).forEach(f => {
+    if(!f.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      uploadFiles.push(ev.target.result);
+      renderPreviews();
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function renderPreviews() {
+  const wrap = document.getElementById('uploadPreviews');
+  wrap.innerHTML = uploadFiles.map((src,i) => `
+    <div class="preview-thumb">
+      <img src="${src}" alt="Preview"/>
+      <button class="remove-preview" onclick="removePreview(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removePreview(i) {
+  uploadFiles.splice(i,1);
+  renderPreviews();
+}
+
+document.getElementById('colorSwatches').addEventListener('click', e => {
+  const swatch = e.target.closest('.color-swatch');
+  if(!swatch) return;
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+  swatch.classList.add('selected');
+  selectedColor = swatch.dataset.color;
+});
+
+document.getElementById('tagInput').addEventListener('keydown', e => {
+  if(e.key!=='Enter' && e.key!==',') return;
+  e.preventDefault();
+  const val = e.target.value.trim().toLowerCase().replace(/,/g,'');
+  if(val && !uploadTags.includes(val)) {
+    uploadTags.push(val);
+    addTagPill(val);
+  }
+  e.target.value = '';
+});
+
+function addTagPill(tag) {
+  const wrap = document.getElementById('tagInputWrap');
+  const input = document.getElementById('tagInput');
+  const pill = document.createElement('span');
+  pill.className = 'tag-pill';
+  pill.innerHTML = `${esc(tag)}<button onclick="removeTag('${esc(tag)}',this)">✕</button>`;
+  wrap.insertBefore(pill, input);
+}
+
+function removeTag(tag, btn) {
+  uploadTags = uploadTags.filter(t=>t!==tag);
+  btn.closest('.tag-pill').remove();
+}
+
+document.getElementById('saveItemBtn').addEventListener('click', () => {
+  const name = document.getElementById('itemName').value.trim();
+  const category = document.getElementById('itemCategory').value;
+
+  if(!name)     { toast('Please enter an item name'); return; }
+  if(!category) { toast('Please select a category');  return; }
+
+  const base = {
+    id: uid(),
+    name,
+    category,
+    brand:    document.getElementById('itemBrand').value.trim(),
+    season:   document.getElementById('itemSeason').value,
+    color:    selectedColor,
+    tags:     [...uploadTags],
+    fav:      false,
+    addedAt:  Date.now(),
+  };
+
+  if(uploadFiles.length > 0) {
+    uploadFiles.forEach((imgData, i) => {
+      items.unshift({ ...base, id: uid(), imageData: imgData, name: uploadFiles.length>1 ? `${name} ${i+1}` : name });
+    });
+  } else {
+    items.unshift(base);
+  }
+
+  saveData(); updateCounts(); renderGrid(); closeModal();
+  toast(`✓ "${name}" added to your wardrobe`);
+});
+
+/* ─── Outfit Generator ───────────────────────────────────────── */
+function checkOutfitState() {
+  document.getElementById('saveOutfitBtn').style.display = currentOutfit ? 'flex' : 'none';
+  if(!currentOutfit) {
+    document.getElementById('outfitHint').textContent = '';
+    document.getElementById('outfitNameRow').style.display = 'none';
+  }
+}
+
+document.getElementById('generateBtn').addEventListener('click', generateOutfit);
+
+function generateOutfit() {
+  const tops     = items.filter(i=>i.category==='tops');
+  const bottoms  = items.filter(i=>i.category==='bottoms');
+  const shoes    = items.filter(i=>i.category==='shoes');
+  const dresses  = items.filter(i=>i.category==='dresses');
+
+  const hasBase = (tops.length && bottoms.length) || dresses.length;
+  if(!hasBase) {
+    const need = [];
+    if(!tops.length && !dresses.length) need.push('tops or dresses');
+    if(!bottoms.length && !dresses.length) need.push('bottoms');
+    toast(`Add some ${need.join(' and ')} first!`);
+    document.getElementById('outfitHint').textContent = `You need at least tops + bottoms, or a dress in your closet.`;
+    return;
+  }
+
+  let outfit = [];
+
+  const useDress = dresses.length && (!tops.length || !bottoms.length || Math.random()<0.3);
+
+  if(useDress) {
+    outfit.push({ label:'Dress', item: pick(dresses) });
+  } else {
+    outfit.push({ label:'Top',    item: pick(tops) });
+    outfit.push({ label:'Bottom', item: pick(bottoms) });
+  }
+
+  if(shoes.length) outfit.push({ label:'Shoes', item: pick(shoes) });
+
+  const outer = items.filter(i=>i.category==='outerwear');
+  const acc   = items.filter(i=>i.category==='accessories');
+
+  if(outer.length && Math.random() > 0.4) outfit.push({ label:'Outerwear', item: pick(outer) });
+  if(acc.length   && Math.random() > 0.5) outfit.push({ label:'Accessory', item: pick(acc) });
+
+  currentOutfit = outfit;
+  renderOutfit(outfit);
+
+  document.getElementById('saveOutfitBtn').style.display = 'flex';
+  document.getElementById('outfitNameRow').style.display = 'none';
+  document.getElementById('outfitHint').textContent = `${outfit.length}-piece look — regenerate for a different combination`;
+}
+
+function pick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+
+function renderOutfit(outfit) {
+  const display = document.getElementById('outfitDisplay');
+  display.innerHTML = `
+    <div class="outfit-slots">
+      ${outfit.map((slot,i) => `
+        <div class="outfit-slot" style="animation-delay:${i*0.08}s">
+          <div class="outfit-slot-img">
+            ${slot.item.imageData
+              ? `<img src="${slot.item.imageData}" alt="${esc(slot.item.name)}"/>`
+              : `<div class="placeholder-img" style="font-size:3rem">${catEmoji(slot.item.category)}</div>`}
+          </div>
+          <div class="outfit-slot-label">${slot.label}</div>
+          <div class="outfit-slot-name" title="${esc(slot.item.name)}">${esc(slot.item.name)}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+document.getElementById('saveOutfitBtn').addEventListener('click', () => {
+  document.getElementById('outfitNameRow').style.display = 'flex';
+  document.getElementById('outfitNameInput').value = '';
+  document.getElementById('outfitNameInput').focus();
+});
+
+document.getElementById('cancelSaveBtn').addEventListener('click', () => {
+  document.getElementById('outfitNameRow').style.display = 'none';
+});
+
+document.getElementById('confirmSaveBtn').addEventListener('click', doSaveOutfit);
+document.getElementById('outfitNameInput').addEventListener('keydown', e => { if(e.key==='Enter') doSaveOutfit(); });
+
+function doSaveOutfit() {
+  if(!currentOutfit) return;
+  const name = document.getElementById('outfitNameInput').value.trim() || `Outfit ${outfits.length+1}`;
+  outfits.unshift({
+    id: uid(),
+    name,
+    pieces: currentOutfit.map(s=>({ label:s.label, itemId:s.item.id, name:s.item.name, imageData:s.item.imageData, category:s.item.category })),
+    savedAt: Date.now(),
+  });
+  saveData(); updateCounts();
+  document.getElementById('outfitNameRow').style.display = 'none';
+  document.getElementById('saveOutfitBtn').style.display = 'none';
+  currentOutfit = null;
+  toast(`✓ "${name}" saved to your outfits`);
+}
+
+/* ─── Saved outfits ──────────────────────────────────────────── */
+function renderSaved() {
+  const grid = document.getElementById('savedOutfitsGrid');
+  if(outfits.length===0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <span class="empty-icon">✦</span>
+        <div class="empty-title">No saved outfits</div>
+        <div class="empty-text">Generate an outfit and save it to see it here.</div>
+        <button class="btn btn-primary" onclick="showView('outfit')">✦ Generate Outfit</button>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = outfits.map((outfit,idx) => `
+    <div class="saved-outfit-card" style="animation-delay:${idx*0.05}s">
+      <div class="saved-outfit-header">
+        <div class="saved-outfit-name">${esc(outfit.name)}</div>
+        <div class="saved-outfit-date">${relDate(outfit.savedAt)}</div>
+      </div>
+      <div class="saved-outfit-imgs">
+        ${outfit.pieces.slice(0,4).map(p =>
+          p.imageData
+            ? `<img src="${p.imageData}" alt="${esc(p.name)}" title="${esc(p.name)}"/>`
+            : `<div style="flex:1;aspect-ratio:3/4;border:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:1.5rem">${catEmoji(p.category)}</div>`
+        ).join('')}
+      </div>
+      <div class="saved-outfit-footer">
+        <div class="saved-outfit-pieces">${outfit.pieces.length} piece${outfit.pieces.length!==1?'s':''} · ${outfit.pieces.map(p=>p.label).join(', ')}</div>
+        <button class="btn-delete-outfit" onclick="deleteOutfit('${outfit.id}')">Remove</button>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function deleteOutfit(id) {
+  if(!confirm('Remove this saved outfit?')) return;
+  outfits = outfits.filter(o=>o.id!==id);
+  saveData(); updateCounts(); renderSaved();
+  toast('Outfit removed');
+}
+
+/* ─── Nav wiring ─────────────────────────────────────────────── */
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const view = btn.dataset.view;
+    const cat  = btn.dataset.cat || 'all';
+    showView(view, cat);
+  });
+});
+
+document.querySelectorAll('.filter-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    currentCat = pill.dataset.cat;
+    document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p.dataset.cat===currentCat));
+    document.querySelectorAll('.nav-btn[data-view="closet"]').forEach(b=>b.classList.toggle('active',b.dataset.cat===currentCat));
+    document.getElementById('pageTitle').textContent = currentCat==='all'?'My Closet':cap(currentCat);
+    renderGrid();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', () => {
+  if(currentView==='closet') renderGrid();
+});
+
+document.getElementById('menuToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarBackdrop').classList.toggle('open');
+});
+
+document.getElementById('sidebarBackdrop').addEventListener('click', closeSidebar);
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('open');
+}
+
+/* ─── Init ───────────────────────────────────────────────────── */
+loadData();
+updateCounts();
+renderGrid();
+</script>
+</body>
+</html>
